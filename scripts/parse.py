@@ -9,6 +9,9 @@ import os
 # Получаем путь к папке "data" на уровень выше
 output_path = os.path.join(os.path.dirname(__file__), "..", "data", "cars_data.json")
 
+# Создаём папку "data", если её нет
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
 
 # Заголовки для обхода блокировки
 HEADERS = {
