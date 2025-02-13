@@ -3,15 +3,8 @@ import re
 import json
 import time
 from bs4 import BeautifulSoup
-
+from datetime import datetime
 import os
-
-# Получаем путь к папке "data" на уровень выше
-output_path = os.path.join(os.path.dirname(__file__), "..", "data", "cars_data.json")
-
-# Создаём папку "data", если её нет
-os.makedirs(os.path.dirname(output_path), exist_ok=True)
-
 
 # Заголовки для обхода блокировки
 HEADERS = {
@@ -23,7 +16,6 @@ HEADERS = {
 def get_car_links(page=1):
     url = f"https://kolesa.kz/cars/?page={page}"
     response = requests.get(url, headers=HEADERS, allow_redirects=False)
-
 
     if response.status_code != 200:
         print(f"Ошибка {response.status_code} при запросе {url}")
@@ -77,6 +69,13 @@ def parse_kolesa(num_pages=1):
                 all_cars.append(car_data)
 
             time.sleep(1)  # Делаем паузу, чтобы не забанили
+
+    # Формируем путь к файлу с текущей датой и временем
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    output_path = os.path.join(os.path.dirname(__file__), "..", "data", f"cars_data_{timestamp}.json")
+
+    # Создаём папку "data", если её нет
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
     # Сохраняем в JSON
     with open(output_path, "w", encoding="utf-8") as f:
