@@ -70,6 +70,7 @@ def get_car_links(url, pages=15, start_page=1):
     print(f"✅ Всего собрано ссылок: {len(links)}")
     return list(links)[:100]
 
+
 def get_car_data(url, processed_ids):
     retries = 3
     for attempt in range(retries):
@@ -86,6 +87,27 @@ def get_car_data(url, processed_ids):
                     if car_id and car_id not in processed_ids:
                         processed_ids.add(car_id)
                         print(f"✅ Данные успешно извлечены для: {url}")
+
+                        # Парсим параметры внутри div с классом offer__parameters
+                        soup = BeautifulSoup(html, 'html.parser')
+                        offer_params_div = soup.find('div', class_='offer__parameters')
+
+                        params_data = {}
+                        if offer_params_div:
+                            # Извлекаем все <dl> элементы с названиями и значениями
+                            param_dls = offer_params_div.find_all('dl')
+                            for param_dl in param_dls:
+                                param_name_tag = param_dl.find('dt')
+                                param_value_tag = param_dl.find('dd')
+
+                                if param_name_tag and param_value_tag:
+                                    param_name = param_name_tag.get_text(strip=True)
+                                    param_value = param_value_tag.get_text(strip=True)
+                                    params_data[param_name] = param_value
+
+                        # Если параметры найдены, добавляем их к данным автомобиля
+                        if params_data:
+                            car['parameters'] = params_data
                         return car
                     else:
                         print(f"⚠️ Повтор записи с ID {car_id}, пропускаем")
@@ -104,6 +126,7 @@ def get_car_data(url, processed_ids):
 
     print(f"❌ Не удалось получить данные после {retries} попыток: {url}")
     return None
+
 
 def parse_cars(url, label="filtered", pages=50, max_links=20):
     print(f"🚗 Начинаем парсинг: {url} | Метка: {label} | Страниц: {pages}")
