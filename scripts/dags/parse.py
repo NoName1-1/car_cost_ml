@@ -140,7 +140,7 @@ def parse_cars(url, label="filtered", pages=50, max_links=20):
         car = get_car_data(link, processed_ids)
         if car:
             cars.append(car)
-        time.sleep(5)
+        time.sleep(2)
 
     if cars:
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -156,13 +156,13 @@ def parse_cars(url, label="filtered", pages=50, max_links=20):
 
 def parse_new_cars():
     print("🚀 Запуск парсинга новых автомобилей")
-    parse_cars("https://kolesa.kz/cars/", label="new", pages=100, max_links=100)
+    parse_cars("https://kolesa.kz/cars/", label="new", pages=20, max_links=1000)
 
 def parse_filtered_cars():
     for url in FILTER_URLS:
         label = url.split("=")[-1]
         print(f"🛠️ Запуск парсинга с фильтром: {label}")
-        parse_cars(url, label=label, pages=20, max_links=20)
+        parse_cars(url, label=label, pages=5, max_links=100)
 
 default_args = {
     "owner": "temirlan",
@@ -175,7 +175,7 @@ default_args = {
 dag = DAG(
     "kolesa_car_parser",
     default_args=default_args,
-    schedule_interval="0 */4 * * *",  # Каждые 4 часа
+    schedule_interval="0 */1 * * *",  # Каждые 4 часа
     catchup=False,
     tags=["kolesa", "parser"]
 )
