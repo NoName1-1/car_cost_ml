@@ -114,7 +114,7 @@ def save_data(**kwargs):
 
 
 default_args = {
-    'owner': 'airflow',
+    'owner': 'temir',
     'depends_on_past': False,
     'retries': 1,
     'start_date': datetime(2025, 2, 22),
